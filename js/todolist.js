@@ -2,28 +2,29 @@
 	"use strict";
 
 	const inputText = document.getElementById("item-input");
-	const inputButton = document.getElementById("add-item");
 	const todoAddForm = document.getElementById("todo-add");
 	const ul = document.getElementById("todo-list");
-	const lis = ul.getElementsByTagName("li");
 
-	function addTask(li) {
-		li.addEventListener("click", function () {
-			console.log(this);
+	let taskList = [];
+
+	function addTask(task) {
+		taskList.push({
+			name: task,
+			createdAt: Date.now(),
+			completed: false,
 		});
 	}
 
-	function addtask(task) {
+	function genereteLiTask(obj) {
 		const listItem = document.createElement("li");
 		listItem.classList.add("todo-item");
 
 		const paragraph = document.createElement("p");
 		paragraph.classList.add("task-name");
 
-		paragraph.textContent = task;
+		paragraph.textContent = obj.name;
 
 		listItem.appendChild(paragraph);
-		ul.appendChild(listItem);
 
 		inputText.value = "";
 		inputText.focus();
@@ -31,14 +32,21 @@
 		listItem.addEventListener("click", function (e) {
 			console.log(this);
 		});
+
+		return listItem;
+	}
+
+	function renderTasks() {
+		ul.innerHTML = "";
+		taskList.forEach((task) => {
+			ul.appendChild(genereteLiTask(task));
+		});
 	}
 
 	todoAddForm.addEventListener("submit", function (e) {
 		e.preventDefault();
 
-		addtask(inputText.value);
-	});
-	[...lis].forEach((li) => {
-		addTask(li);
+		addTask(inputText.value);
+		renderTasks();
 	});
 })();
