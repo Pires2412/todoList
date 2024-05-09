@@ -18,13 +18,24 @@
 	function genereteLiTask(obj) {
 		const listItem = document.createElement("li");
 		listItem.classList.add("todo-item");
-
 		const paragraph = document.createElement("p");
 		paragraph.classList.add("task-name");
+		const checkButton = document.createElement("button");
+		const editButton = document.createElement("i");
+		const deleteButton = document.createElement("i");
 
+		checkButton.className = "button-check";
+		checkButton.innerHTML = '<i class="fas fa-check displayNone"></i>';
+
+		editButton.className = "fas fa-edit";
+
+		deleteButton.classList.add("fas", "fa-trash-alt");
+
+		listItem.appendChild(checkButton);
 		paragraph.textContent = obj.name;
-
 		listItem.appendChild(paragraph);
+		listItem.appendChild(editButton);
+		listItem.appendChild(deleteButton);
 
 		inputText.value = "";
 		inputText.focus();
