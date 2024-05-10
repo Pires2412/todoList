@@ -36,7 +36,13 @@
 
 		switch (e.target.getAttribute("data-action")) {
 			case "check":
-				console.log("é o check");
+				taskList[currentLiIndex].completed =
+					!taskList[currentLiIndex].completed;
+				if (taskList[currentLiIndex].completed) {
+					currentLi.querySelector(".fa-check").classList.remove("displayNone");
+				} else {
+					currentLi.querySelector(".fa-check").classList.add("displayNone");
+				}
 				break;
 
 			case "editButton":
@@ -47,14 +53,21 @@
 				});
 
 				editContainer.style.display = "flex";
+				const edit = document.querySelector(".editInput");
+				edit.value = taskList[currentLiIndex].name;
 				break;
 
 			case "containerEditButton":
-				console.log("é o edit button do container");
+				const val = currentLi.querySelector(".editInput").value;
+				taskList[currentLiIndex].name = val;
+				renderTasks();
+
 				break;
 
 			case "containerCancelButton":
-				console.log("é o cancel button do container");
+				const btnCancel = document.querySelector(".cancelButton");
+				const containerEdit = document.querySelector(".editContainer");
+				containerEdit.style.display = "none";
 				break;
 
 			case "deleteButton":
@@ -63,7 +76,7 @@
 				break;
 
 			default:
-				console.log("não é nenhuma opção acima");
+				return;
 		}
 	}
 
@@ -74,7 +87,8 @@
 		const checkButton = document.createElement("button");
 		checkButton.setAttribute("data-action", "check");
 		checkButton.className = "button-check";
-		checkButton.innerHTML = '<i class="fas fa-check displayNone"></i>';
+		checkButton.innerHTML =
+			'<i class="fas fa-check displayNone"  data-action="check"></i>';
 		listItem.appendChild(checkButton);
 
 		const paragraph = document.createElement("p");
@@ -127,6 +141,7 @@
 
 	todoAddForm.addEventListener("submit", function (e) {
 		e.preventDefault();
+		if (!inputText.value) return;
 
 		addTask(inputText.value);
 		renderTasks();
