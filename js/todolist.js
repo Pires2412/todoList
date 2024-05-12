@@ -6,7 +6,21 @@
 	const ul = document.getElementById("todo-list");
 	const lis = document.getElementsByTagName("li");
 
-	let taskList = [];
+	let taskList = getSavedData();
+
+	function getSavedData() {
+		let taskData = localStorage.getItem("task");
+		taskData = JSON.parse(taskData);
+		//return localStorage.getItem("task");
+
+		return taskData && taskData.length ? taskData : [];
+	}
+
+	function setNewData() {
+		localStorage.setItem("task", JSON.stringify(taskList));
+	}
+
+	setNewData();
 
 	function addTask(task) {
 		taskList.push({
@@ -14,6 +28,8 @@
 			createdAt: Date.now(),
 			completed: false,
 		});
+
+		setNewData();
 	}
 
 	function clickedUl(e) {
@@ -43,6 +59,8 @@
 				} else {
 					currentLi.querySelector(".fa-check").classList.add("displayNone");
 				}
+
+				setNewData();
 				break;
 
 			case "editButton":
@@ -61,6 +79,7 @@
 				const val = currentLi.querySelector(".editInput").value;
 				taskList[currentLiIndex].name = val;
 				renderTasks();
+				setNewData();
 
 				break;
 
@@ -73,6 +92,7 @@
 			case "deleteButton":
 				taskList.splice(currentLiIndex, 1);
 				renderTasks();
+				setNewData();
 				break;
 
 			default:
@@ -148,4 +168,5 @@
 	});
 
 	ul.addEventListener("click", clickedUl);
+	renderTasks();
 })();
