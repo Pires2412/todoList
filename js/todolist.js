@@ -8,20 +8,48 @@
 
 	let taskList = getSavedData();
 
+	let taskListMaped = taskList.map((element) => {
+		element = new Task(element.name);
+		return element;
+	});
+
 	function getSavedData() {
 		let taskData = localStorage.getItem("task");
 		taskData = JSON.parse(taskData);
-		//return localStorage.getItem("task");
 
 		return taskData && taskData.length ? taskData : [];
 	}
 
 	function setNewData() {
-		localStorage.setItem("task", JSON.stringify(taskList));
+		localStorage.setItem("task", JSON.stringify(taskListMaped));
 	}
 
 	setNewData();
 
+	function Task(name, completed, createdAt, updatedAt) {
+		this.name = name;
+		this.completed = completed || false;
+		this.createdAt = createdAt || Date.now();
+		this.updatedAt = updatedAt || null;
+		this.update = update;
+		this.toggleDone = toggleDone;
+
+		function update() {
+			this.updatedAt = Date.now();
+			setNewData();
+		}
+
+		function toggleDone() {
+			if (this.completed === true) {
+				this.completed = false;
+			} else {
+				this.completed = true;
+			}
+		}
+
+		return this;
+	}
+	/*
 	function addTask(task) {
 		taskList.push({
 			name: task,
@@ -31,30 +59,20 @@
 
 		setNewData();
 	}
+	*/
 
 	function clickedUl(e) {
-		console.log(e.target);
-		console.log(e.target.getAttribute("data-action"));
-
-		if (!e.target.getAttribute("data-action")) {
-			console.log("clicou em nada");
-			return;
-		}
-
 		let currentLi = e.target;
 		while (currentLi.nodeName !== "LI") {
 			currentLi = currentLi.parentElement;
 		}
-		console.log(currentLi);
 
 		const currentLiIndex = [...lis].indexOf(currentLi);
-		console.log(currentLiIndex);
 
 		switch (e.target.getAttribute("data-action")) {
 			case "check":
-				taskList[currentLiIndex].completed =
-					!taskList[currentLiIndex].completed;
-				if (taskList[currentLiIndex].completed) {
+				taskListMaped[currentLiIndex].toggleDone();
+				if (taskListMaped[currentLiIndex].completed === true) {
 					currentLi.querySelector(".fa-check").classList.remove("displayNone");
 				} else {
 					currentLi.querySelector(".fa-check").classList.add("displayNone");
@@ -77,7 +95,8 @@
 
 			case "containerEditButton":
 				const val = currentLi.querySelector(".editInput").value;
-				taskList[currentLiIndex].name = val;
+				taskListMaped[currentLiIndex].name = val;
+				taskListMaped[currentLiIndex].update();
 				renderTasks();
 				setNewData();
 
@@ -90,7 +109,7 @@
 				break;
 
 			case "deleteButton":
-				taskList.splice(currentLiIndex, 1);
+				taskListMaped.splice(currentLiIndex, 1);
 				renderTasks();
 				setNewData();
 				break;
@@ -108,7 +127,7 @@
 		checkButton.setAttribute("data-action", "check");
 		checkButton.className = "button-check";
 		checkButton.innerHTML =
-			'<i class="fas fa-check displayNone"  data-action="check"></i>';
+			'<i class="fas fa-check displayNone" data-action="check"></i>';
 		listItem.appendChild(checkButton);
 
 		const paragraph = document.createElement("p");
@@ -154,7 +173,7 @@
 
 	function renderTasks() {
 		ul.innerHTML = "";
-		taskList.forEach((task) => {
+		taskListMaped.forEach((task) => {
 			ul.appendChild(genereteLiTask(task));
 		});
 	}
@@ -163,10 +182,14 @@
 		e.preventDefault();
 		if (!inputText.value) return;
 
-		addTask(inputText.value);
+		let task = new Task(inputText.value);
+		taskListMaped.push(task);
 		renderTasks();
+		setNewData();
 	});
 
 	ul.addEventListener("click", clickedUl);
 	renderTasks();
+
+	console.log(taskList);
 })();
